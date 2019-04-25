@@ -2,4 +2,9 @@
     <string name="app_name">android-alarm</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
+    <string name="alarm_header">Alarm</string>
+    <string name="lorem_ipsum">lorem ipsum</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_screen_slide_pager">ScreenSlidePagerActivity</string>
 </resources>
