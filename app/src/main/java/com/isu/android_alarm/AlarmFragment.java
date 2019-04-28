@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class AlarmFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         List<String> input = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            input.add("Test" + i);
+            input.add("Message " + i + ", every Tuesday");
         }
         mAdapter = new AlarmRecyclerViewAdapter(input);
         recyclerView.setAdapter(mAdapter);

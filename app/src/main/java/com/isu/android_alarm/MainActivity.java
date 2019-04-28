@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import java.util.Date;
 public class MainActivity extends FragmentActivity {
 
     private ViewPager pager;
+    private FloatingActionButton fab;
     BroadcastReceiver broadcastReceiver;
     private final SimpleDateFormat clockObj = new SimpleDateFormat("hh:mm");
     private final SimpleDateFormat dateObj = new SimpleDateFormat("MMMM d, yyyy");
@@ -55,6 +57,33 @@ public class MainActivity extends FragmentActivity {
 
         pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                switch (position) {
+                    case 0:
+                        fab.show();
+                        break;
+
+                    default:
+                        fab.hide();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(pager);

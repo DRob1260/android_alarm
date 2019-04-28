@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_height="100sp"
     android:padding="6dip" >
 
     <TextView
@@ -13,18 +13,19 @@
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="Description"
-        android:textSize="12sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/firstLine"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="36sp"
         android:layout_above="@id/secondLine"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="true"
         android:gravity="center_vertical"
         android:text="Example application"
-        android:textSize="16sp" />
+        android:textSize="30sp"
+        android:textStyle="bold"/>
 
 </RelativeLayout>
