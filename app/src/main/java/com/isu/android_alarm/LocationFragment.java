@@ -6,9 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.fragment.app.Fragment;
 
 public class LocationFragment extends Fragment {
+
+    private static FloatingActionButton mSharedFab;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -29,6 +33,28 @@ public class LocationFragment extends Fragment {
         f.setArguments(b);
 
         return f;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSharedFab = null; // To avoid keeping/leaking the reference of the FAB
+    }
+
+    public static void shareFab(FloatingActionButton fab) {
+        if (fab == null) { // When the FAB is shared to another Fragment
+            if (mSharedFab != null) {
+                mSharedFab.setOnClickListener(null);
+            }
+            mSharedFab = null;
+        }
+        else {
+            mSharedFab = fab;
+            mSharedFab.setImageResource(R.drawable.ic_add_location_24dp);
+            mSharedFab.setOnClickListener((fabView) -> {
+                // code
+            });
+        }
     }
 
 }
