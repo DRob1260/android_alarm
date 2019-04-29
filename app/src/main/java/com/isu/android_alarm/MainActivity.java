@@ -120,22 +120,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
-
-
-        /*pager = (ViewPager) findViewById(R.id.viewPager);
-        pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-
-
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(pager);
-
-        TextView clock = (TextView) findViewById(R.id.clock);
-        clock.setText(clockObj.format(new Date()));
-
-        TextView date = (TextView) findViewById(R.id.date);
-        date.setText(dateObj.format(new Date()));*/
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
