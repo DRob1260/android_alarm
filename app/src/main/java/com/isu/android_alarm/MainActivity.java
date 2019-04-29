@@ -1,5 +1,6 @@
 package com.isu.android_alarm;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -72,9 +74,13 @@ public class MainActivity extends FragmentActivity {
         TextView date = (TextView) findViewById(R.id.date);
         date.setText(dateObj.format(new Date()));
 
+        AlarmFragment alarmFragment = new AlarmFragment();
+        TimerFragment timerFragment = new TimerFragment();
+        LocationFragment locationFragment = new LocationFragment();
+
         mSharedFab = (FloatingActionButton) findViewById(R.id.fab);
 
-        AlarmFragment.shareFab(mSharedFab); // To init the FAB
+        alarmFragment.shareFab(mSharedFab); // To init the FAB
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
@@ -89,24 +95,24 @@ public class MainActivity extends FragmentActivity {
                     case ViewPager.SCROLL_STATE_IDLE:
                         switch (viewPager.getCurrentItem()) {
                             case 0:
-                                TimerFragment.shareFab(null); // Remove FAB from fragment
-                                LocationFragment.shareFab(null); // Remove FAB from fragment
-                                AlarmFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
+                                timerFragment.shareFab(null); // Remove FAB from fragment
+                                locationFragment.shareFab(null); // Remove FAB from fragment
+                                alarmFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
                                 break;
                             case 1:
-                                AlarmFragment.shareFab(null); // Remove FAB from fragment
-                                LocationFragment.shareFab(null); // Remove FAB from fragment
-                                TimerFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
+                                alarmFragment.shareFab(null); // Remove FAB from fragment
+                                locationFragment.shareFab(null); // Remove FAB from fragment
+                                timerFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
                                 break;
                             case 2:
-                                TimerFragment.shareFab(null); // Remove FAB from fragment
-                                AlarmFragment.shareFab(null); // Remove FAB from fragment
-                                LocationFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
+                                timerFragment.shareFab(null); // Remove FAB from fragment
+                                alarmFragment.shareFab(null); // Remove FAB from fragment
+                                locationFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
                                 break;
                             default:
-                                TimerFragment.shareFab(null); // Remove FAB from fragment
-                                LocationFragment.shareFab(null); // Remove FAB from fragment
-                                AlarmFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
+                                timerFragment.shareFab(null); // Remove FAB from fragment
+                                locationFragment.shareFab(null); // Remove FAB from fragment
+                                alarmFragment.shareFab(mSharedFab); // Share FAB to new displayed fragment
                                 break;
                         }
                         mSharedFab.show(); // Show animation
@@ -161,5 +167,10 @@ public class MainActivity extends FragmentActivity {
             default: return null;
             }
         }
+    }
+
+    public void showTimePickerDialog() {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 }
