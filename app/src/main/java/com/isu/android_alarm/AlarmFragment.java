@@ -1,6 +1,5 @@
 package com.isu.android_alarm;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -8,6 +7,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
@@ -16,22 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class AlarmFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private AlarmRecyclerViewAdapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
     private static Activity activity;
     private static FloatingActionButton mSharedFab;
-
-
     static final int TIME_DIALOG_ID = 1111;
     static final int CAL_DIALOG_ID = 1112;
     static final int MSG_DIALOG_ID = 1113;
@@ -42,12 +38,16 @@ public class AlarmFragment extends Fragment {
     private int day;
     private String message;
     private ArrayList<Alarm> alarms = new ArrayList<>();
-
+    private AlarmRecyclerViewAdapter mAdapter = new AlarmRecyclerViewAdapter(alarms);
+    private View v;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+
+        v = inflater.inflate(R.layout.fragment_alarm, container, false);
         activity = getActivity();
 
-        View v = inflater.inflate(R.layout.fragment_alarm, container, false);
+
 
         final Calendar c = Calendar.getInstance();
         hr = c.get(Calendar.HOUR_OF_DAY);
@@ -58,16 +58,24 @@ public class AlarmFragment extends Fragment {
         updateTime(hr, min);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.my_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
-       /* List<String> input = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            input.add("Message " + i + ", every Tuesday");
-        }
-        mAdapter = new AlarmRecyclerViewAdapter(input);*/
-       alarms.add(new Alarm(new Date(1999,1,26, 12, 00), "Hello"));
+        //recyclerView.setHasFixedSize(true);
+
+        alarms.add(new Alarm(new Date(1999,1,26, 12, 00), "Hello"));
         mAdapter = new AlarmRecyclerViewAdapter(alarms);
         recyclerView.setAdapter(mAdapter);
+        System.out.println(mAdapter.getItemCount());
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        FloatingActionButton fab = v.findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            createdDialog(MSG_DIALOG_ID);
+            createdDialog(TIME_DIALOG_ID).show();
+            createdDialog(CAL_DIALOG_ID).show();
+        });
 
         return v;
     }
@@ -76,24 +84,6 @@ public class AlarmFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mSharedFab = null; // To avoid keeping/leaking the reference of the FAB
-    }
-
-    public void shareFab(FloatingActionButton fab) {
-        if (fab == null) { // When the FAB is shared to another Fragment
-            if (mSharedFab != null) {
-                mSharedFab.setOnClickListener(null);
-            }
-            mSharedFab = null;
-        }
-        else {
-            mSharedFab = fab;
-            mSharedFab.setImageResource(R.drawable.ic_alarm_add_24dp);
-            mSharedFab.setOnClickListener((fabView) -> {
-                createdDialog(MSG_DIALOG_ID);
-                createdDialog(TIME_DIALOG_ID).show();
-                createdDialog(CAL_DIALOG_ID).show();
-            });
-        }
     }
 
     protected Dialog createdDialog(int id) {
@@ -133,16 +123,25 @@ public class AlarmFragment extends Fragment {
         // Set up the input
         final EditText input = new EditText(activity);
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
 
         // Set up the buttons
         builder.setPositiveButton("OK", (dialog, which) -> {
             message = input.getText().toString();
+            if (message.equals(""))
+                message = "Alarm";
 
+            System.out.println("Year: " + year);
+            System.out.println("Month: " + month);
+            System.out.println("Day: " + day);
+            System.out.println("Hour: " + hr);
+            System.out.println("Minute: " + min);
+            System.out.println("Message: " + message);
             Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message);
-            mAdapter.add(alarm);
 
+            mAdapter.add(alarm);
+            System.out.println("Size of alarms" + mAdapter.getItemCount());
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
