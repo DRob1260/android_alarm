@@ -21,6 +21,11 @@ public class LocationFragment extends Fragment {
         TextView tv = (TextView) v.findViewById(R.id.locationFrag);
         tv.setText(getArguments().getString("msg"));
 
+        FloatingActionButton fab = v.findViewById(R.id.locationFab);
+        fab.setOnClickListener(view -> {
+            // action on click
+        });
+
         return v;
     }
 

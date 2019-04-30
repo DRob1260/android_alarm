@@ -8,14 +8,16 @@ public class Alarm {
 
     private Date dateAndTime;
     private String message = "Alarm";
+    private Boolean repeating = false;
 
     public Alarm(Date dateAndTime){
         this.dateAndTime = dateAndTime;
     }
 
-    public Alarm(Date dateAndTime, String message){
+    public Alarm(Date dateAndTime, String message, Boolean repeating){
         this.dateAndTime = dateAndTime;
         this.message = message;
+        this.repeating = repeating;
     }
 
     String getTimeStr() {
@@ -32,6 +34,10 @@ public class Alarm {
 
     String getMessage(){
         return message;
+    }
+
+    Boolean getRepeating() {
+        return repeating;
     }
 
 }

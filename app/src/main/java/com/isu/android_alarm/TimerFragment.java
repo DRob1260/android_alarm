@@ -21,6 +21,11 @@ public class TimerFragment extends Fragment {
         TextView tv = (TextView) v.findViewById(R.id.timerFrag);
         tv.setText(getArguments().getString("msg"));
 
+        FloatingActionButton fab = v.findViewById(R.id.timerFab);
+        fab.setOnClickListener(view -> {
+            // action on click
+        });
+
         return v;
     }
 

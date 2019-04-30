@@ -5,15 +5,19 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -38,7 +42,7 @@ public class AlarmFragment extends Fragment {
     private int day;
     private String message;
     private ArrayList<Alarm> alarms = new ArrayList<>();
-    private AlarmRecyclerViewAdapter mAdapter = new AlarmRecyclerViewAdapter(alarms);
+    private AlarmRecyclerViewAdapter mAdapter;
     private View v;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,8 +50,6 @@ public class AlarmFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_alarm, container, false);
         activity = getActivity();
-
-
 
         final Calendar c = Calendar.getInstance();
         hr = c.get(Calendar.HOUR_OF_DAY);
@@ -60,8 +62,7 @@ public class AlarmFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.my_recycler_view);
         //recyclerView.setHasFixedSize(true);
 
-        alarms.add(new Alarm(new Date(1999,1,26, 12, 00), "Hello"));
-        mAdapter = new AlarmRecyclerViewAdapter(alarms);
+        mAdapter = new AlarmRecyclerViewAdapter(activity, alarms);
         recyclerView.setAdapter(mAdapter);
         System.out.println(mAdapter.getItemCount());
 
@@ -70,7 +71,7 @@ public class AlarmFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        FloatingActionButton fab = v.findViewById(R.id.fab);
+        FloatingActionButton fab = v.findViewById(R.id.alarmFab);
         fab.setOnClickListener(view -> {
             createdDialog(MSG_DIALOG_ID);
             createdDialog(TIME_DIALOG_ID).show();
@@ -117,7 +118,38 @@ public class AlarmFragment extends Fragment {
     };
 
     private void buildMessageDialog(){
+        View messageDialogView = View.inflate(activity, R.layout.message_dialog_layout, null);
+        EditText editText = (EditText) messageDialogView.findViewById(R.id.messageEditText);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        final Boolean[] checked = {false};
+        CheckBox checkBox = (CheckBox) messageDialogView.findViewById(R.id.repeatingCheckbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                checked[0] = true;
+            }
+        });
+        checkBox.setText("Repeat Alarm");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Alarm Message");
+        builder.setView(messageDialogView);
+        builder.setView(messageDialogView);
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            message = editText.getText().toString();
+            if (message.equals(""))
+                message = "Alarm";
+
+            Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message, checked[0]);
+            mAdapter.add(alarm);
+
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+
+
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Alarm Message");
 
         // Set up the input
@@ -132,20 +164,13 @@ public class AlarmFragment extends Fragment {
             if (message.equals(""))
                 message = "Alarm";
 
-            System.out.println("Year: " + year);
-            System.out.println("Month: " + month);
-            System.out.println("Day: " + day);
-            System.out.println("Hour: " + hr);
-            System.out.println("Minute: " + min);
-            System.out.println("Message: " + message);
-            Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message);
-
+            Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message, false);
             mAdapter.add(alarm);
-            System.out.println("Size of alarms" + mAdapter.getItemCount());
+
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-        builder.show();
+        builder.show();*/
     }
 
     private static String utilTime(int value) {

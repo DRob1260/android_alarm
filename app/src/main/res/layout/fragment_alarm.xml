@@ -18,7 +18,7 @@
             android:layout_height="match_parent"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
+            android:id="@+id/alarmFab"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_gravity="bottom|right"
