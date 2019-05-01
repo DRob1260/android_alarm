@@ -93,31 +93,7 @@ public class AlarmFragment extends Fragment {
             createdDialog(CAL_DIALOG_ID).show();
         });
 
-        NotificationManager notificationManager = (NotificationManager)
-                activity.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Intent intent = new Intent(activity, NotificationPublisher.class);
-        intent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
-        intent.putExtra(NotificationPublisher.NOTIFICATION, "message");
-        // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getActivity(activity, (int) System.currentTimeMillis(), intent, 0);
-        Notification n = new Notification.Builder(activity)
-                .setContentTitle("Test")
-                .setContentText("test")
-                .setSmallIcon(R.drawable.ic_alarm_add_24dp)
-                .setContentIntent(pIntent).build();
-
-        notificationManager.notify(1, n);
-
         return v;
-    }
-
-    private Notification getNotification(String content) {
-        Notification.Builder builder = new Notification.Builder(activity);
-        builder.setContentTitle("Scheduled Notification");
-        builder.setContentText(content);
-        builder.setSmallIcon(R.drawable.ic_alarm_add_24dp);
-        return builder.build();
     }
 
     @Override
