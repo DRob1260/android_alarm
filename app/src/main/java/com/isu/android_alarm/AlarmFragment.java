@@ -1,17 +1,32 @@
 package com.isu.android_alarm;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Canvas;
 import android.os.Bundle;
+
+import androidx.core.app.NotificationBuilderWithBuilderAccessor;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +59,7 @@ public class AlarmFragment extends Fragment {
     private ArrayList<Alarm> alarms = new ArrayList<>();
     private AlarmRecyclerViewAdapter mAdapter;
     private View v;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -60,7 +76,6 @@ public class AlarmFragment extends Fragment {
         updateTime(hr, min);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.my_recycler_view);
-        //recyclerView.setHasFixedSize(true);
 
         mAdapter = new AlarmRecyclerViewAdapter(activity, alarms);
         recyclerView.setAdapter(mAdapter);
@@ -78,7 +93,36 @@ public class AlarmFragment extends Fragment {
             createdDialog(CAL_DIALOG_ID).show();
         });
 
+        NotificationManager notificationManager = (NotificationManager)
+                activity.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent intent = new Intent(activity, NotificationPublisher.class);
+        intent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        intent.putExtra(NotificationPublisher.NOTIFICATION, "message");
+        // use System.currentTimeMillis() to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getActivity(activity, (int) System.currentTimeMillis(), intent, 0);
+        Notification n = new Notification.Builder(activity)
+                .setContentTitle("Test")
+                .setContentText("test")
+                .setSmallIcon(R.drawable.ic_alarm_add_24dp)
+                .setContentIntent(pIntent).build();
+
+        notificationManager.notify(1, n);
+
         return v;
+    }
+
+    private Notification getNotification(String content) {
+        Notification.Builder builder = new Notification.Builder(activity);
+        builder.setContentTitle("Scheduled Notification");
+        builder.setContentText(content);
+        builder.setSmallIcon(R.drawable.ic_alarm_add_24dp);
+        return builder.build();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -140,37 +184,37 @@ public class AlarmFragment extends Fragment {
             if (message.equals(""))
                 message = "Alarm";
 
-            Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message, checked[0]);
+            Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message, checked[0], activity);
             mAdapter.add(alarm);
 
+            newAlarmManager(alarm);
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
 
+    }
 
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Alarm Message");
+    private void newAlarmManager(Alarm alarm) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
+        calendar.set(Calendar.MINUTE, alarm.getMinute());
 
-        // Set up the input
-        final EditText input = new EditText(activity);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
+        Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
+        int notificationId = Integer.parseInt(alarm.getTimeStamp());
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, notificationId);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, message);
 
-        // Set up the buttons
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            message = input.getText().toString();
-            if (message.equals(""))
-                message = "Alarm";
+        AlarmManager alarmMgr = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(activity,notificationId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message, false);
-            mAdapter.add(alarm);
+        if (alarm.getRepeating())
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+        else alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
 
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        builder.show();*/
+        alarm.setAlarmManager(alarmMgr);
+        alarm.setAlarmIntent(alarmIntent);
     }
 
     private static String utilTime(int value) {

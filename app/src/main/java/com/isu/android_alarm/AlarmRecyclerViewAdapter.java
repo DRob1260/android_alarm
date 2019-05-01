@@ -2,14 +2,11 @@ package com.isu.android_alarm;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 import java.util.ArrayList;
-import java.util.Date;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,7 +48,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         final String message = alarm.getMessage();
         holder.txtHeader.setText(alarm.getTimeStr());
         if(alarm.getRepeating())
-            holder.txtFooter.setText(message + ", every " + alarm.getDay());
+            holder.txtFooter.setText(message + ", everyday");
         else holder.txtFooter.setText(message);
         holder.itemView.setTag(alarm);
         holder.txtHeader.setOnClickListener(v -> {
@@ -62,7 +59,6 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        System.out.println("Size of alarms from Adapter is " + alarms.size());
         return alarms.size();
     }
 
