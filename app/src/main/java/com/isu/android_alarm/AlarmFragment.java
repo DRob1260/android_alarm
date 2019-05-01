@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationBuilderWithBuilderAccessor;
@@ -41,6 +42,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.ContentResolver;
+import android.provider.CalendarContract;
+import java.net.URI;
 
 public class AlarmFragment extends Fragment {
 
@@ -59,6 +65,7 @@ public class AlarmFragment extends Fragment {
     private ArrayList<Alarm> alarms = new ArrayList<>();
     private AlarmRecyclerViewAdapter mAdapter;
     private View v;
+    private ContentResolver cr;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,9 +95,23 @@ public class AlarmFragment extends Fragment {
 
         FloatingActionButton fab = v.findViewById(R.id.alarmFab);
         fab.setOnClickListener(view -> {
+
+         ContentResolver cr = getActivity().getContentResolver();
+         ContentValues cv = new ContentValues();
+
             createdDialog(MSG_DIALOG_ID);
             createdDialog(TIME_DIALOG_ID).show();
             createdDialog(CAL_DIALOG_ID).show();
+
+            cv.put(CalendarContract.Events.TITLE,"Event Title");
+            cv.put(CalendarContract.Events.DESCRIPTION,"Event Description");
+            cv.put(CalendarContract.Events.EVENT_LOCATION,"Event Location");
+            cv.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
+            cv.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis()+60*60*1000);
+            cv.put(CalendarContract.Events.CALENDAR_ID,1);
+            cv.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
+            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI,cv);
+
         });
 
         return v;
@@ -109,6 +130,7 @@ public class AlarmFragment extends Fragment {
 
     protected Dialog createdDialog(int id) {
         switch (id) {
+
             case TIME_DIALOG_ID:
                 return new TimePickerDialog(activity, timePickerListener, hr, min, false);
             case CAL_DIALOG_ID:
