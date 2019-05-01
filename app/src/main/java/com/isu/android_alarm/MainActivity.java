@@ -1,5 +1,7 @@
 package com.isu.android_alarm;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -8,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,6 +19,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +32,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends FragmentActivity {
-
+    String mPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final int REQUEST_CODE_PERMISSION = 2;
     private ViewPager pager;
     private FloatingActionButton fab;
     BroadcastReceiver broadcastReceiver;
@@ -57,6 +63,7 @@ public class MainActivity extends FragmentActivity {
             unregisterReceiver(broadcastReceiver);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +86,7 @@ public class MainActivity extends FragmentActivity {
         AlarmFragment alarmFragment = new AlarmFragment();
         TimerFragment timerFragment = new TimerFragment();
         LocationFragment locationFragment = new LocationFragment();
+
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {

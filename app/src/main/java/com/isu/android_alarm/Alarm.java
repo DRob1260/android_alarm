@@ -21,11 +21,11 @@ public class Alarm {
     }
 
     public void setAlarmManager(AlarmManager alarmMgr) {
-        this.alarmMgr = alarmMgr;
+   //     this.alarmMgr = alarmMgr;
     }
 
     public void setAlarmIntent(PendingIntent alarmIntent){
-        this.alarmIntent = alarmIntent;
+        //this.alarmIntent = alarmIntent;
     }
 
     public String getTimeStr() {
@@ -68,5 +68,6 @@ public class Alarm {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yymmddkkmm");
         return dateFormat.format(dateAndTime);
     }
+
 
 }

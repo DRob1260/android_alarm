@@ -15,8 +15,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationBuilderWithBuilderAccessor;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
@@ -45,6 +47,7 @@ import java.util.Date;
 public class AlarmFragment extends Fragment {
 
     private RecyclerView recyclerView;
+
     private static Activity activity;
     private static FloatingActionButton mSharedFab;
     static final int TIME_DIALOG_ID = 1111;
@@ -60,6 +63,7 @@ public class AlarmFragment extends Fragment {
     private AlarmRecyclerViewAdapter mAdapter;
     private View v;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -107,6 +111,7 @@ public class AlarmFragment extends Fragment {
         mSharedFab = null; // To avoid keeping/leaking the reference of the FAB
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     protected Dialog createdDialog(int id) {
         switch (id) {
             case TIME_DIALOG_ID:
@@ -137,6 +142,7 @@ public class AlarmFragment extends Fragment {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void buildMessageDialog(){
         View messageDialogView = View.inflate(activity, R.layout.message_dialog_layout, null);
         EditText editText = (EditText) messageDialogView.findViewById(R.id.messageEditText);
@@ -160,6 +166,36 @@ public class AlarmFragment extends Fragment {
             if (message.equals(""))
                 message = "Alarm";
 
+            android.icu.util.Calendar cal = android.icu.util.Calendar.getInstance();
+            Intent intent = new Intent(Intent.ACTION_EDIT);
+            intent.setType("vnd.android.cursor.item/event");
+            cal.set(Calendar.YEAR, year);
+            cal.set(Calendar.MONTH, month);
+            cal.set(Calendar.DAY_OF_MONTH, day);
+            cal.set(Calendar.HOUR_OF_DAY, hr);
+            cal.set(Calendar.MINUTE, min);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            intent.putExtra("beginTime", cal.getTimeInMillis());
+            intent.putExtra("allDay", false);
+            if(checked[0])
+            intent.putExtra("rrule", "FREQ=DAILY");
+            intent.putExtra("endTime", cal.getTimeInMillis()+60*1000);
+            intent.putExtra("title", message);
+            startActivity(intent);
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+
+            // Setting Dialog Title
+            alertDialog.setTitle("Google Calendar");
+
+            // Setting Dialog Message
+            alertDialog.setMessage("Adding event to Google Calendar");
+
+            alertDialog.show();
+
+            LocationFragment.locationTimer.cancel();
+
             Alarm alarm = new Alarm(new Date(year, month, day, hr, min), message, checked[0], activity);
             mAdapter.add(alarm);
 
@@ -172,25 +208,25 @@ public class AlarmFragment extends Fragment {
     }
 
     private void newAlarmManager(Alarm alarm) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
-        calendar.set(Calendar.MINUTE, alarm.getMinute());
+       /// Calendar calendar = Calendar.getInstance();
+       // calendar.setTimeInMillis(System.currentTimeMillis());
+       // calendar.set(Calendar.HOUR_OF_DAY, alarm.getHour());
+       // calendar.set(Calendar.MINUTE, alarm.getMinute());
 
-        Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
-        int notificationId = Integer.parseInt(alarm.getTimeStamp());
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, notificationId);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, message);
+       // Intent notificationIntent = new Intent(activity, NotificationPublisher.class);
+        //int notificationId = Integer.parseInt(alarm.getTimeStamp());
+       /// notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, notificationId);
+       // notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, message);
 
-        AlarmManager alarmMgr = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(activity,notificationId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //AlarmManager alarmMgr = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
+        //PendingIntent alarmIntent = PendingIntent.getBroadcast(activity,notificationId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (alarm.getRepeating())
-            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
-        else alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+       // if (alarm.getRepeating())
+       //     alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+       // else alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
 
-        alarm.setAlarmManager(alarmMgr);
-        alarm.setAlarmIntent(alarmIntent);
+      //  alarm.setAlarmManager(alarmMgr);
+       // alarm.setAlarmIntent(alarmIntent);
     }
 
     private static String utilTime(int value) {
