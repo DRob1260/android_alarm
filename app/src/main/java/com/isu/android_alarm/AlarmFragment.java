@@ -103,9 +103,9 @@ public class AlarmFragment extends Fragment {
             createdDialog(TIME_DIALOG_ID).show();
             createdDialog(CAL_DIALOG_ID).show();
 
-            cv.put(CalendarContract.Events.TITLE,"Event Title");
-            cv.put(CalendarContract.Events.DESCRIPTION,"Event Description");
-            cv.put(CalendarContract.Events.EVENT_LOCATION,"Event Location");
+            cv.put(CalendarContract.Events.TITLE,"Example Title");
+            cv.put(CalendarContract.Events.DESCRIPTION,"Example Description");
+            cv.put(CalendarContract.Events.EVENT_LOCATION,"Example Location");
             cv.put(CalendarContract.Events.DTSTART, Calendar.getInstance().getTimeInMillis());
             cv.put(CalendarContract.Events.DTEND, Calendar.getInstance().getTimeInMillis()+60*60*1000);
             cv.put(CalendarContract.Events.CALENDAR_ID,1);
